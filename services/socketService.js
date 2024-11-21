@@ -46,8 +46,14 @@ exports.handleJoinRoom = (rooms, socket, roomId, io) => {
     if (room.mentor === socket.id) {
       room.mentor = null;
       io.to(roomId).emit('mentor-left'); // Notify students that the mentor has left
+      if (room.students.length === 0) {
+        delete rooms[roomId];
+      }
     } else {
       room.students = room.students.filter((id) => id !== socket.id);
+      if (!room.mentor && room.students.length === 0) {
+        delete rooms[roomId];
+      }
     }
   });
 };
