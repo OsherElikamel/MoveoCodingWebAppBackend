@@ -1,4 +1,3 @@
-const CodeBlock = require('../models/CodeBlock');
 exports.handleJoinRoom = (rooms, socket, roomId, io) => {
   if (!rooms[roomId]) {
     rooms[roomId] = { mentor: null, students: [], code: '' };
@@ -34,8 +33,13 @@ exports.handleJoinRoom = (rooms, socket, roomId, io) => {
   const updateStudentCount = () => {
     const studentCount = room.students.length; // Count of students only
     io.to(roomId).emit('students-count', studentCount);
-};
+  };
   updateStudentCount();
+
+  if (!room.mentor && room.students.length === 0) {
+    delete rooms[roomId];
+  }
+
 
   // Handle disconnection
   socket.on('disconnect', () => {
